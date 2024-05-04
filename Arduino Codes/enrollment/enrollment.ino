@@ -15,19 +15,21 @@ SoftwareSerial mySerial(2, 3);
 
 #endif
 
+
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 const int rs = 7, en = 6, d4 = 8, d5 = 9, d6 = 10, d7 = 11;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 uint8_t id;
 bool enrolled = false;
+int bookingNumber;
+float payAmount = 50;
 
 void setup() {
   pinMode(12, OUTPUT);
   pinMode(11, OUTPUT);
   lcd.begin(16, 2);
   finger.begin(57600);
-
   if (finger.verifyPassword()) {
     lcd.clear();
     lcd.print("Sensor Found!");
@@ -38,6 +40,12 @@ void setup() {
     lcd.print("Please wait...");
     while (1) { delay(1); }
   }
+}
+
+int generateBookingNumber() {
+  // Generate a random 4-digit number
+  int bookingNumber = random(1000, 10000);  // Generates a number between 1000 and 9999
+  return bookingNumber;
 }
 
 void countdown() {
@@ -155,10 +163,9 @@ uint8_t getFingerprintEnroll() {
     case FINGERPRINT_OK:
       lcd.clear();
       lcd.print("Stored!");
-      lcd.setCursor(0, 1);
-      lcd.print("Thank You!");
       enrolled = true;
-      delay(2000);
+      delay(1000);
+      bookingNumber = generateBookingNumber();
       break;
     case FINGERPRINT_PACKETRECIEVEERR:
     case FINGERPRINT_BADLOCATION:
@@ -170,6 +177,45 @@ uint8_t getFingerprintEnroll() {
       lcd.clear();
       return p;
   }
+  return true;
+}
+void showBookingNumber() {
+  lcd.clear();
+  lcd.print("Booking Number:");
+  lcd.setCursor(0, 1);
+  lcd.print(bookingNumber);
+  delay(5000);
+  lcd.clear();
+  lcd.print("Thank You!");
+  delay(2000);
+}
+
+bool appApproval() {
+  return true;
+}
+
+bool unlockingTry() {
+  uint8_t p = finger.getImage();
+  if (p != FINGERPRINT_OK) return false;
+
+  p = finger.image2Tz();
+  if (p != FINGERPRINT_OK) return false;
+
+  p = finger.fingerFastSearch();
+  if (p != FINGERPRINT_OK) return false;
+
+
+  // found a match!
+  if (!appApproval()) {
+    lcd.clear();
+    lcd.print("Make Payment!!");
+    lcd.setCursor(0, 1);
+    lcd.print(payAmount);
+    delay(2000);
+    lcd.clear();
+    return false;
+  }
+
   return true;
 }
 
@@ -188,11 +234,22 @@ void loop() {
     lcd.print("Locking...");
     delay(3000);
     digitalWrite(12, LOW);
+    showBookingNumber();
     lcd.clear();
-    while (1) {
+    while (!unlockingTry()) {
+      lcd.setCursor(0, 0);
       lcd.print("Locked!");
       lcd.setCursor(0, 1);
-      lcd.print("Press to unlock>");
+      lcd.print("To Unlock --->");
     }
+    lcd.clear();
+    lcd.print("Unlocking...");
+    delay(3000);
+    digitalWrite(12, HIGH);
+    lcd.clear();
+    lcd.print("Unlocked!");
+    delay(3000);
+    lcd.clear();
+    enrolled = false;
   }
 }

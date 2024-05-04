@@ -5,10 +5,10 @@ SoftwareSerial mySerial(2, 3);
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
-void setup()
-{
+void setup() {
   Serial.begin(9600);
-  while (!Serial);  // For Yun/Leo/Micro/Zero/...
+  while (!Serial)
+    ;  // For Yun/Leo/Micro/Zero/...
   delay(100);
   Serial.println("fingertest");
   pinMode(12, OUTPUT);
@@ -26,14 +26,16 @@ void setup()
   }
 
   finger.getTemplateCount();
-  Serial.print("Sensor contains "); Serial.print(finger.templateCount); Serial.println(" templates");
+  Serial.print("Sensor contains ");
+  Serial.print(finger.templateCount);
+  Serial.println(" templates");
   Serial.println("Waiting for valid finger...");
 }
 
-void loop()                     // run over and over again
+void loop()  // run over and over again
 {
   getFingerprintIDez();
-  delay(50);            //don't ned to run this at full speed.
+  delay(50);  //don't ned to run this at full speed.
   digitalWrite(12, LOW);
   digitalWrite(11, LOW);
 }
@@ -96,17 +98,20 @@ uint8_t getFingerprintID() {
     Serial.println("Unknown error");
     return p;
   }
-  {digitalWrite(11, HIGH);
-  delay(3000);
-  digitalWrite(11, LOW);
-  Serial.print("Not Found"); 
-  Serial.print("Error"); 
-  return finger.fingerID;
- }
+  {
+    digitalWrite(11, HIGH);
+    delay(3000);
+    digitalWrite(11, LOW);
+    Serial.print("Not Found");
+    Serial.print("Error");
+    return finger.fingerID;
+  }
 
   // found a match!
-  Serial.print("Found ID #"); Serial.print(finger.fingerID);
-  Serial.print(" with confidence of "); Serial.println(finger.confidence);
+  Serial.print("Found ID #");
+  Serial.print(finger.fingerID);
+  Serial.print(" with confidence of ");
+  Serial.println(finger.confidence);
 
   return finger.fingerID;
 }
@@ -114,14 +119,14 @@ uint8_t getFingerprintID() {
 // returns -1 if failed, otherwise returns ID #
 int getFingerprintIDez() {
   uint8_t p = finger.getImage();
-  if (p != FINGERPRINT_OK)  return -1;
+  if (p != FINGERPRINT_OK) return -1;
 
   p = finger.image2Tz();
-  if (p != FINGERPRINT_OK)  return -1;
-  
+  if (p != FINGERPRINT_OK) return -1;
+
   p = finger.fingerFastSearch();
-  if (p != FINGERPRINT_OK)  return -1; 
-  
+  if (p != FINGERPRINT_OK) return -1;
+
 
   // found a match!
 
@@ -129,9 +134,9 @@ int getFingerprintIDez() {
     digitalWrite(12, HIGH);
     delay(10000);
     digitalWrite(12, LOW);
-    Serial.print("Found ID #"); Serial.print(finger.fingerID);
-    Serial.print(" with confidence of "); Serial.println(finger.confidence);
-    
-    
-  
-  }   }
+    Serial.print("Found ID #");
+    Serial.print(finger.fingerID);
+    Serial.print(" with confidence of ");
+    Serial.println(finger.confidence);
+  }
+}

@@ -10,15 +10,15 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
-        android:text="Enter Booking Number"/>
+        android:hint="Enter Booking Number"/>
 
     <EditText
         android:id="@+id/edit_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="text"
-        android:text="Enter Amount" />
+        android:inputType="numberDecimal"
+        android:hint="Enter Amount" />
 
     <Button
         android:id="@+id/btn_payment"
