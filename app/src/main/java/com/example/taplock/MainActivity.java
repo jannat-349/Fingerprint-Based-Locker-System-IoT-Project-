@@ -18,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
         btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate to another activity or XML layout here
                 startActivity(new Intent(MainActivity.this, PaymentActivity.class));
             }
         });
