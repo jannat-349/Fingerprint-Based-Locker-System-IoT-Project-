@@ -1,20 +1,7 @@
 #include <Adafruit_Fingerprint.h>
 #include <LiquidCrystal.h>
 
-#if (defined(__AVR__) || defined(ESP8266)) && !defined(__AVR_ATmega2560__)
-// For UNO and others without hardware serial, we must use software serial...
-// pin #2 is IN from sensor (GREEN wire)
-// pin #3 is OUT from arduino  (WHITE wire)
-// Set up the serial port to use softwareserial..
-SoftwareSerial mySerial(2, 3);
-
-#else
-// On Leonardo/M0/etc, others with hardware serial, use hardware serial!
-// #0 is green wire, #1 is white
-#define mySerial Serial1
-
-#endif
-
+SoftwareSerial mySerial(2, 3);  // Define software serial for communication with fingerprint sensor
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 const int rs = 7, en = 6, d4 = 8, d5 = 9, d6 = 10, d7 = 11;
@@ -23,12 +10,13 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 uint8_t id;
 bool enrolled = false;
 int bookingNumber;
-float payAmount = 50;
+float payAmount;
 
 void setup() {
   pinMode(12, OUTPUT);
   pinMode(11, OUTPUT);
   lcd.begin(16, 2);
+  Serial.begin(9600);
   finger.begin(57600);
   if (finger.verifyPassword()) {
     lcd.clear();
@@ -42,10 +30,12 @@ void setup() {
   }
 }
 
-int generateBookingNumber() {
+void generateBookingNumber() {
   // Generate a random 4-digit number
-  int bookingNumber = random(1000, 10000);  // Generates a number between 1000 and 9999
-  return bookingNumber;
+  bookingNumber = random(1000, 10000);  // Generates a number between 1000 and 9999
+}
+void generatePayAmount() {
+  payAmount = random(10, 100); 
 }
 
 void countdown() {
@@ -165,7 +155,8 @@ uint8_t getFingerprintEnroll() {
       lcd.print("Stored!");
       enrolled = true;
       delay(1000);
-      bookingNumber = generateBookingNumber();
+      generateBookingNumber();
+      generatePayAmount();
       break;
     case FINGERPRINT_PACKETRECIEVEERR:
     case FINGERPRINT_BADLOCATION:
@@ -191,8 +182,13 @@ void showBookingNumber() {
 }
 
 bool appApproval() {
+  Serial.println(bookingNumber);
+  delay(1500);
+  Serial.println(payAmount);
+  delay(1500);
   return true;
 }
+
 
 bool unlockingTry() {
   uint8_t p = finger.getImage();
@@ -206,6 +202,11 @@ bool unlockingTry() {
 
 
   // found a match!
+  lcd.clear();
+  lcd.print("Make Payment!!");
+  lcd.setCursor(0, 1);
+  lcd.print(payAmount);
+  delay(2000);
   if (!appApproval()) {
     lcd.clear();
     lcd.print("Make Payment!!");

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "214268925233",
+    "firebase_url": "https://taplock-b48b0-default-rtdb.firebaseio.com",
+    "project_id": "taplock-b48b0",
+    "storage_bucket": "taplock-b48b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214268925233:android:f5907f7e035839d83f4c10",
+        "android_client_info": {
+          "package_name": "com.example.taplock"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1X6k8iOFUYXU6Q98ZYzdvt-YZ_pdruz4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
